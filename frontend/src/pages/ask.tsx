@@ -1,15 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { ContentHeader } from "../components/content-header";
-import { Fab } from "@material-ui/core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import icon_delete from "../styles/img/icon_delete.svg";
 
 interface IProps {
-  showComeBackDescription?: boolean;
-  activePageIndex: number;
+  currentPageIndex: number;
 }
 
 export const Ask: React.FC = () => {
@@ -17,14 +13,51 @@ export const Ask: React.FC = () => {
   const onCurrentPageChange = (pageIndex: number) => {
     setCurrentPage(pageIndex);
   };
-  const [showComeBackDescription, setShowComeBackDescription] = useState(true);
-  const onClickRemove = () => setShowComeBackDescription(false);
-  const [titleText, setTitleText] = useState("");
+  const initialGogumaData = {
+    title: "",
+    content: "",
+    choices: ["선택지1", "선택지2"],
+  };
+  const [gogumaData, setGogumaData] = useState(initialGogumaData);
   const onTitleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > 30) {
       e.target.value = e.target.value.substring(0, 30);
     }
-    setTitleText(e.target.value);
+    setGogumaData({
+      ...gogumaData,
+      title: e.target.value,
+    });
+  };
+  const onContentInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length > 1000) {
+      e.target.value = e.target.value.substring(0, 1000);
+    }
+    setGogumaData({
+      ...gogumaData,
+      content: e.target.value,
+    });
+  };
+  const onChoiceBoxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.value.length > 0
+      ? e.target.classList.add("active")
+      : e.target.classList.remove("active");
+
+    if (e.target.value.length > 30) {
+      e.target.value = e.target.value.substring(0, 30);
+    }
+    setGogumaData({
+      ...gogumaData,
+      choices: [...gogumaData.choices],
+    });
+  };
+
+  const onChoiceBoxClicked = (e: any) => {
+    e.target.parentElement
+      .querySelectorAll(".active")
+      .forEach((child: { classList: { remove: (arg0: string) => any } }) =>
+        child.classList.remove("active"),
+      );
+    e.target.classList.add("active");
   };
 
   return (
@@ -35,21 +68,32 @@ export const Ask: React.FC = () => {
       <ContentHeader isPrev={false} isNext={true} title={"등록하기"} />
       <AskContainer>
         <StepContainer>
-          <Step className={currentPage >= 1 ? "active" : ""} onClick={() => onCurrentPageChange(1)}>
+          <Step
+            className={`${gogumaData.title.length > 0 ? "active" : ""} ${
+              currentPage == 1 ? "current" : ""
+            }`}
+            onClick={() => onCurrentPageChange(1)}
+          >
             <StepNumber>1</StepNumber>
             <StepTitle>제목</StepTitle>
           </Step>
-          <Step className={currentPage >= 2 ? "active" : ""} onClick={() => onCurrentPageChange(2)}>
+          <Step
+            className={`${gogumaData.content.length > 0 ? "active" : ""} ${
+              currentPage == 2 ? "current" : ""
+            }`}
+            onClick={() => onCurrentPageChange(2)}
+          >
             <StepNumber>2</StepNumber>
             <StepTitle>내용</StepTitle>
           </Step>
-          <Step className={currentPage >= 3 ? "active" : ""} onClick={() => onCurrentPageChange(3)}>
+          <Step
+            className={`${gogumaData.choices.length > 0 ? "active" : ""} ${
+              currentPage == 3 ? "current" : ""
+            }`}
+            onClick={() => onCurrentPageChange(3)}
+          >
             <StepNumber>3</StepNumber>
             <StepTitle>선택지</StepTitle>
-          </Step>
-          <Step className={currentPage >= 4 ? "active" : ""} onClick={() => onCurrentPageChange(4)}>
-            <StepNumber>4</StepNumber>
-            <StepTitle>태그</StepTitle>
           </Step>
         </StepContainer>
         <PageContainer className={currentPage == 1 ? "current" : ""}>
@@ -57,60 +101,47 @@ export const Ask: React.FC = () => {
           <ShortInput
             onChange={onTitleInputChange}
             placeholder="제목을 입력해주세요"
-            className={"title"}
+            className={`title ${gogumaData.title.length > 0 ? "active" : ""}`}
           />
-          <TextCounter>({titleText.length}/30자)</TextCounter>
+          <TextCounter>({gogumaData.title.length}/30자)</TextCounter>
+          <ComebackDescription>
+            바로 작성하지 않아도 좋아요. 언제든지 돌아올 수 있어요 :)
+          </ComebackDescription>
         </PageContainer>
         <PageContainer className={currentPage == 2 ? "current" : ""}>
           <Question>고구마에 당신의 고민을 들려주세요.</Question>
-          <ContentTextArea />
+          <ContentTextArea
+            onChange={onContentInputChange}
+            className={`${gogumaData.content.length > 0 ? "active" : ""}`}
+          />
         </PageContainer>
         <PageContainer className={currentPage == 3 ? "current" : ""}>
           <Question>선택지의 질문을 입력해주세요.</Question>
-          <ShortInput onChange={onTitleInputChange} placeholder="선택지 질문 입력" />
-          <TextCounter>({titleText.length}/30자)</TextCounter>
+          <ShortInput onChange={onChoiceBoxInputChange} placeholder="선택지 질문 입력" />
+          <TextCounter>({gogumaData.title.length}/30자)</TextCounter>
           <ChoiceBoxes>
-            {["선택지1", "선택지2"].map(choice => (
-              <ChoiceBox key={choice}>{choice}</ChoiceBox>
+            {gogumaData.choices.map((choice, index) => (
+              <ChoiceBox key={index} onClick={onChoiceBoxClicked}>
+                {choice}
+              </ChoiceBox>
             ))}
           </ChoiceBoxes>
-          <AddChoiceBoxContainer>
-            <FontAwesomeIcon
-              icon={faPlus}
-              style={{ color: "#989898", verticalAlign: "middle", width: "9px", padding: "11px" }}
-            />
-            <AddChoiceBoxText>선택지 추가하기</AddChoiceBoxText>
-          </AddChoiceBoxContainer>
-        </PageContainer>
-        <PageContainer className={currentPage == 4 ? "current" : ""}>
-          <Question>작성한 글에 어울리는 태그를 붙혀주세요.</Question>
-          <ShortInput onChange={onTitleInputChange} className={"tag"} />
         </PageContainer>
       </AskContainer>
-      {showComeBackDescription ? (
-        <ComebackDescription>
-          <span>바로 작성하지 않아도 좋아요. 언제든지 돌아올 수 있어요 :)</span>
-          <img
-            onClick={onClickRemove}
-            src={icon_delete}
-            style={{ width: "15px", verticalAlign: "middle", justifyContent: "flex-end" }}
-          />
-        </ComebackDescription>
-      ) : null}
     </>
   );
 };
 
 const ComebackDescription = styled.div`
-  position: fixed;
-  bottom: 10px;
+  margin-top: 27px;
   font-family: "Spoqa Han Sans Neo", "sans-serif";
   font-size: 12px;
+  line-height: 15px;
   color: #989898;
 `;
 
 const AskContainer = styled.div`
-  padding: 0 27px;
+  padding: 0 19px;
 `;
 
 const StepContainer = styled.div`
@@ -122,17 +153,19 @@ const StepContainer = styled.div`
 const Step = styled.div.attrs(props => ({ className: props.className }))`
   &.active {
     border-bottom: 2px solid #8c5cdd;
+  }
+  &.current {
     color: #8c5cdd;
   }
-
+  font-family: "Spoqa Han Sans Neo", "sans-serif";
   padding: 10px 0;
   border-bottom: 2px solid #d5d5d5;
   display: inline-block;
-  width: 25%;
+  width: 33.3%;
 `;
 
 const StepNumber = styled.div`
-  font-size: 10px;
+  font-size: 12px;
 `;
 
 const StepTitle = styled.div`
@@ -143,19 +176,22 @@ const PageContainer = styled.div`
   &.current {
     display: block;
   }
-
+  padding: 0 3px;
   display: none;
 `;
 
 const Question = styled.div`
   font-family: "Spoqa Han Sans Neo", "sans-serif";
-  padding: 52px 0 27px 0;
+  padding: 38px 0 27px 0;
   font-size: 18px;
 `;
 
 const ShortInput = styled.input`
   &.title {
     font-family: MaruBuri-Regular;
+  }
+  &.title.active {
+    border-bottom: 2px solid #8c5cdd;
   }
   &:placeholder {
     color: "#989898";
@@ -191,6 +227,7 @@ const TextCounter = styled.div`
   font-size: 10px;
   color: #989898;
   float: right;
+  display: block;
 `;
 
 const ChoiceBoxes = styled.div`
@@ -228,18 +265,4 @@ const ChoiceBox = styled.div`
   padding: 0 15px;
   word-break: keep-all;
   text-align: center;
-`;
-
-const AddChoiceBoxContainer = styled.div`
-  color: #989898;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 27px;
-`;
-
-const AddChoiceBoxText = styled.div`
-  font-family: "Spoqa Han Sans Neo", "sans-serif";
-  font-size: 14px;
-  vertical-align: middle;
 `;

@@ -116,7 +116,7 @@ export const Home: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>go!guma</title>
+        <title>고구마</title>
       </Helmet>
       <Header />
       <HomeContainer>
