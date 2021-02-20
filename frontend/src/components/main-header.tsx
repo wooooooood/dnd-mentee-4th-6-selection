@@ -20,7 +20,7 @@ const TitleContainer = styled.div`
   color: "#8C5CDD";
   text-align: left;
   font-weight: bold;
-  font-family: 'Gaegu', cursive;
+  font-family: "Gaegu", cursive;
 `;
 
 const SearchContainer = styled.div`
@@ -41,7 +41,7 @@ export const Header: React.FC = () => {
       </SidebarButtonContainer>
       <TitleContainer>
         <Link to="/" style={{ textDecoration: "none", color: "#8C5CDD" }}>
-            고구마
+          고구마
         </Link>
       </TitleContainer>
       <SearchContainer>

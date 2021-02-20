@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { ContentHeader } from "../components/content-header";
 import styled from "styled-components";
-import icon_delete from "../styles/img/icon_delete.svg";
-
-interface IProps {
-  currentPageIndex: number;
-}
 
 export const Ask: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,13 +46,13 @@ export const Ask: React.FC = () => {
     });
   };
 
-  const onChoiceBoxClicked = (e: any) => {
-    e.target.parentElement
-      .querySelectorAll(".active")
-      .forEach((child: { classList: { remove: (arg0: string) => any } }) =>
-        child.classList.remove("active"),
-      );
-    e.target.classList.add("active");
+  const onChoiceBoxClicked = () => {
+    // e.target.parentElement
+    //   .querySelectorAll(".active")
+    //   .forEach((child: { classList: { remove: (arg0: string) => any } }) =>
+    //     child.classList.remove("active"),
+    //   );
+    // e.target.classList.add("active");
   };
 
   return (
