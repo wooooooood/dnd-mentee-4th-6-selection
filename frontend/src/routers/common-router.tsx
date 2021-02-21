@@ -52,9 +52,6 @@ const commenRoutes = [
     path: "/goguma-info",
     component: <GogumaInfo />,
   },
-];
-
-const loggedInRoutes = [
   {
     path: "/ask",
     component: <Ask />,
@@ -63,6 +60,9 @@ const loggedInRoutes = [
     path: "/ask-success",
     component: <AskSuccess />,
   },
+];
+
+const loggedInRoutes = [
   {
     path: "/my-page",
     component: <MyPage />,
